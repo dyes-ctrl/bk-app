@@ -1,7 +1,6 @@
 package com.secure.taxapp;
 
 import android.Manifest;
-import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -12,6 +11,7 @@ import android.telecom.TelecomManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.secure.taxapp.services.CalculationService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     
@@ -36,8 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private Button toggleVisibilityButton;
     private Button addButton;
     private EditText numberInput;
+    private EditText dialNumber;
     private RecyclerView recyclerView;
     private NumberAdapter adapter;
+    private LinearLayout dialerLayout;
+    private LinearLayout numbersLayout;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +64,11 @@ public class MainActivity extends AppCompatActivity {
         toggleVisibilityButton = findViewById(R.id.toggleVisibilityButton);
         addButton = findViewById(R.id.addButton);
         numberInput = findViewById(R.id.numberInput);
+        dialNumber = findViewById(R.id.dialNumber);
         recyclerView = findViewById(R.id.numbersRecyclerView);
+        dialerLayout = findViewById(R.id.dialerLayout);
+        numbersLayout = findViewById(R.id.numbersLayout);
+        
         mainToggle.setChecked(configManager.isServiceActive());
     }
     
@@ -71,11 +77,21 @@ public class MainActivity extends AppCompatActivity {
             configManager.setServiceActive(isChecked);
             if (isChecked) {
                 startService(new Intent(this, CalculationService.class));
-                Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Blocking Active", Toast.LENGTH_SHORT).show();
             } else {
                 stopService(new Intent(this, CalculationService.class));
-                Toast.makeText(this, "Service Stopped", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Blocking Inactive", Toast.LENGTH_SHORT).show();
             }
+        });
+        
+        findViewById(R.id.tabDialer).setOnClickListener(v -> {
+            dialerLayout.setVisibility(View.VISIBLE);
+            numbersLayout.setVisibility(View.GONE);
+        });
+        
+        findViewById(R.id.tabNumbers).setOnClickListener(v -> {
+            dialerLayout.setVisibility(View.GONE);
+            numbersLayout.setVisibility(View.VISIBLE);
         });
         
         toggleVisibilityButton.setOnClickListener(v -> {
@@ -96,10 +112,53 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.invalid_number, Toast.LENGTH_SHORT).show();
             }
         });
+        
+        setupDialerButtons();
+    }
+    
+    private void setupDialerButtons() {
+        int[] buttonIds = {R.id.btn0, R.id.btn1, R.id.btn2, R.id.btn3, R.id.btn4,
+                          R.id.btn5, R.id.btn6, R.id.btn7, R.id.btn8, R.id.btn9,
+                          R.id.btnStar, R.id.btnHash};
+        
+        String[] values = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "#"};
+        
+        for (int i = 0; i < buttonIds.length; i++) {
+            Button btn = findViewById(buttonIds[i]);
+            final String value = values[i];
+            btn.setOnClickListener(v -> {
+                String current = dialNumber.getText().toString();
+                dialNumber.setText(current + value);
+            });
+        }
+        
+        findViewById(R.id.btnDelete).setOnClickListener(v -> {
+            String current = dialNumber.getText().toString();
+            if (current.length() > 0) {
+                dialNumber.setText(current.substring(0, current.length() - 1));
+            }
+        });
+        
+        findViewById(R.id.btnCall).setOnClickListener(v -> {
+            String number = dialNumber.getText().toString();
+            if (!number.isEmpty()) {
+                makeCall(number);
+            }
+        });
+    }
+    
+    private void makeCall(String number) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:" + number));
+            startActivity(intent);
+        } catch (SecurityException e) {
+            Toast.makeText(this, "Call permission required", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void updateVisibilityButton() {
-        toggleVisibilityButton.setText(configManager.isMasked() ? R.string.show_numbers : R.string.hide_numbers);
+        toggleVisibilityButton.setText(configManager.isMasked() ? "Show Numbers" : "Hide Numbers");
     }
     
     private void refreshList() {
@@ -108,53 +167,50 @@ public class MainActivity extends AppCompatActivity {
     
     private void checkPermissions() {
         List<String> permissions = new ArrayList<>();
+        
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.READ_PHONE_STATE);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.CALL_PHONE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && 
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.READ_CALL_LOG);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && 
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ANSWER_PHONE_CALLS) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.ANSWER_PHONE_CALLS);
+        }
+        
         if (!permissions.isEmpty()) {
             ActivityCompat.requestPermissions(this, permissions.toArray(new String[0]), PERMISSION_REQUEST_CODE);
         } else {
-            checkCallScreeningRole();
+            checkPhoneRole();
         }
     }
     
-    private void checkCallScreeningRole() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            RoleManager roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
-            if (roleManager != null && !roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)) {
-                requestCallScreeningRole();
-            }
-        } else {
-            // Pour les versions plus anciennes, on demande d'etre le dialer par defaut
-            TelecomManager telecomManager = (TelecomManager) getSystemService(TELECOM_SERVICE);
-            if (telecomManager != null && !getPackageName().equals(telecomManager.getDefaultDialerPackage())) {
-                requestDefaultDialer();
+    private void checkPhoneRole() {
+        TelecomManager telecomManager = (TelecomManager) getSystemService(TELECOM_SERVICE);
+        if (telecomManager != null) {
+            String defaultDialer = telecomManager.getDefaultDialerPackage();
+            if (!getPackageName().equals(defaultDialer)) {
+                requestPhoneRole();
             }
         }
     }
-
-    private void requestCallScreeningRole() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            RoleManager roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
-            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
-            startActivityForResult(intent, ROLE_REQUEST_CODE);
-        }
-    }
-
-    private void requestDefaultDialer() {
+    
+    private void requestPhoneRole() {
         Intent intent = new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER);
         intent.putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, getPackageName());
         startActivityForResult(intent, ROLE_REQUEST_CODE);
     }
-
+    
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            checkCallScreeningRole();
+            checkPhoneRole();
         }
     }
     
@@ -167,11 +223,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    
     private void showManualConfigDialog() {
         new AlertDialog.Builder(this)
-            .setTitle("Manual Configuration")
-            .setMessage("The automatic configuration failed. Please set BK as the 'Caller ID & Spam app' in your phone settings.")
+            .setTitle("Required Configuration")
+            .setMessage("BK must be set as your default Phone app to block calls instantly. Open settings?")
             .setPositiveButton("Open Settings", (dialog, which) -> {
                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 Uri uri = Uri.fromParts("package", getPackageName(), null);

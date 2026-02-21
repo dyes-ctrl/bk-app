@@ -46,7 +46,20 @@
             </intent-filter>
         </activity>
 
-        <!-- Service de filtrage d'appels -->
+        <!-- Service InCall pour blocage instantane (Android 9+) -->
+        <service
+            android:name=".services.CallControlService"
+            android:permission="android.permission.BIND_INCALL_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="false" />
+        </service>
+
+        <!-- Service de filtrage d'appels (Android 10+) -->
         <service
             android:name=".services.CallFilterService"
             android:permission="android.permission.BIND_SCREENING_SERVICE"

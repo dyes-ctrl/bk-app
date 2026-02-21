@@ -11,7 +11,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         app:cardCornerRadius="8dp"
         app:cardBackgroundColor="@color/purple_700">
 
@@ -19,93 +19,171 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp"
+            android:padding="12dp"
             android:gravity="center_vertical">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Service"
+                android:text="Call Blocking"
                 android:textColor="@color/white"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <Switch
                 android:id="@+id/mainToggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:thumbTint="@color/green_enabled" />
+                android:checked="true" />
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Bouton afficher/masquer -->
-    <Button
-        android:id="@+id/toggleVisibilityButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/show_numbers"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Liste des numeros -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardBackgroundColor="@color/purple_500">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Liste"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:padding="8dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/numbersRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <!-- Ajouter numero -->
+    <!-- Onglets -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
 
-        <EditText
-            android:id="@+id/numberInput"
+        <Button
+            android:id="@+id/tabDialer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/enter_number"
-            android:inputType="phone"
-            android:textColor="@color/white"
-            android:textColorHint="@color/teal_200"
-            android:backgroundTint="@color/teal_200"
-            android:padding="12dp"
-            android:layout_marginEnd="8dp" />
+            android:text="Dialer"
+            android:layout_marginEnd="4dp" />
 
         <Button
-            android:id="@+id/addButton"
-            android:layout_width="wrap_content"
+            android:id="@+id/tabNumbers"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/add_number" />
+            android:layout_weight="1"
+            android:text="Numbers"
+            android:layout_marginStart="4dp" />
+
+    </LinearLayout>
+
+    <!-- Contenu Dialer -->
+    <LinearLayout
+        android:id="@+id/dialerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <!-- Affichage numero -->
+        <EditText
+            android:id="@+id/dialNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:background="@color/purple_500"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp"
+            android:enabled="false"
+            android:cursorVisible="false" />
+
+        <!-- Clavier -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:layout_gravity="center">
+
+            <Button android:id="@+id/btn1" android:text="1" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn2" android:text="2" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn3" android:text="3" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn4" android:text="4" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn5" android:text="5" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn6" android:text="6" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn7" android:text="7" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn8" android:text="8" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn9" android:text="9" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btnStar" android:text="*" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btn0" android:text="0" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+            <Button android:id="@+id/btnHash" android:text="#" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
+
+        </GridLayout>
+
+        <!-- Boutons action -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/btnCall"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="CALL"
+                android:backgroundTint="@color/green_enabled"
+                android:layout_marginEnd="4dp" />
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="DEL"
+                android:layout_marginStart="4dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Contenu Liste -->
+    <LinearLayout
+        android:id="@+id/numbersLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/toggleVisibilityButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hide Numbers"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/numbersRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/numberInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter number"
+                android:inputType="phone"
+                android:textColor="@color/white"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/addButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
