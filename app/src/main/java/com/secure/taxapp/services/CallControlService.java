@@ -80,7 +80,7 @@ public class CallControlService extends InCallService {
      */
     private void rejectCallInstantly(Call call) {
         try {
-            call.reject(Call.REJECT_REASON_DECLINED, null);
+            call.reject(false, null);
         } catch (Exception e) {
             try {
                 call.disconnect();
