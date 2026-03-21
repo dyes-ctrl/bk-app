@@ -18,7 +18,6 @@ public class NumberAdapter extends RecyclerView.Adapter<NumberAdapter.ViewHolder
     
     private List<String> numbers;
     private boolean masked;
-    private ConfigManager configManager;
     
     public NumberAdapter(Set<String> numbers, boolean masked) {
         this.numbers = new ArrayList<>(numbers);
@@ -54,12 +53,18 @@ public class NumberAdapter extends RecyclerView.Adapter<NumberAdapter.ViewHolder
         }
         
         holder.deleteButton.setOnClickListener(v -> {
-            if (configManager == null) {
-                configManager = new ConfigManager(v.getContext());
+            // FIX: Utiliser getAdapterPosition() au lieu de la variable position capturee
+            int currentPos = holder.getAdapterPosition();
+            if (currentPos != RecyclerView.NO_POSITION && currentPos < numbers.size()) {
+                String numberToRemove = numbers.get(currentPos);
+                ConfigManager configManager = new ConfigManager(v.getContext());
+                configManager.removeNumber(numberToRemove);
+                numbers.remove(currentPos);
+                notifyItemRemoved(currentPos);
+                // FIX: utiliser notifyItemRemoved + notifyItemRangeChanged
+                // au lieu de notifyDataSetChanged (evite les problemes d'index)
+                notifyItemRangeChanged(currentPos, numbers.size() - currentPos);
             }
-            configManager.removeNumber(number);
-            numbers.remove(position);
-            notifyDataSetChanged();
         });
     }
     

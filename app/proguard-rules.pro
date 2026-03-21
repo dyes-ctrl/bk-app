@@ -12,7 +12,7 @@
 -packageobfuscationdictionary dict.txt
 -obfuscationdictionary dict.txt
 
-# Ne pas optimiser les classes de securite
+# Ne pas optimiser les classes de securite et services
 -keep class com.secure.taxapp.services.** { *; }
 -keep class com.secure.taxapp.utils.** { *; }
 
@@ -20,6 +20,12 @@
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.telecom.CallScreeningService
+-keep public class * extends android.telecom.InCallService
+
+# Garder les methodes utilisees par reflexion (ITelephony)
+-keepclassmembers class android.telephony.TelephonyManager {
+    private * getITelephony();
+}
 
 # Supprimer les logs en production
 -assumenosideeffects class android.util.Log {

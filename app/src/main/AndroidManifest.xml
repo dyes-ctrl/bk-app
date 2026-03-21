@@ -2,20 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.secure.taxapp">
 
-    <!-- Permissions necessaires -->
+    <!-- Permissions telephonie -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+
+    <!-- Permissions contacts (pour creer les favoris = liste blanche DND) -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
+    <!-- Permission DND - INDISPENSABLE pour le fonctionnement -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
+    <!-- Service persistant -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-    
-    <!-- Pour les appels -->
-    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
-    
-    <!-- Pour ignorer les optimisations batterie -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    
+    <!-- Pour AlarmManager exact (redemarrage service) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:allowBackup="false"
@@ -34,49 +41,16 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Indispensable pour etre reconnu comme application d'appel -->
-            <intent-filter>
-                <action android:name="android.intent.action.DIAL" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="tel" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.DIAL" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
 
-        <!-- Service InCall pour blocage instantane (Android 9+) -->
-        <service
-            android:name=".services.CallControlService"
-            android:permission="android.permission.BIND_INCALL_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.telecom.InCallService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.telecom.IN_CALL_SERVICE_UI"
-                android:value="false" />
-        </service>
-
-        <!-- Service de filtrage d'appels (Android 10+) -->
-        <service
-            android:name=".services.CallFilterService"
-            android:permission="android.permission.BIND_SCREENING_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.telecom.CallScreeningService" />
-            </intent-filter>
-        </service>
-
-        <!-- Service de calcul en arriere-plan -->
+        <!-- Service de surveillance DND en arriere-plan -->
         <service
             android:name=".services.CalculationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="phoneCall" />
 
-        <!-- Receiver pour demarrage auto -->
+        <!-- Receiver pour demarrage auto au boot -->
         <receiver
             android:name=".services.BootReceiver"
             android:enabled="true"
@@ -85,19 +59,26 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
 
-        <!-- Receiver pour redemarrage service -->
+        <!-- Receiver pour redemarrage du service si tue -->
         <receiver
             android:name=".services.ServiceRestartReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="RESTART_SERVICE" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <!--
+            NOTE : On ne declare plus l'InCallService ni le CallScreeningService.
+            La solution DND ne necessite pas d'etre l'application d'appel par defaut.
+            Le systeme Android gere tout en mode DND Prioritaire.
+        -->
 
     </application>
 
