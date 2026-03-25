@@ -1,38 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.secure.taxapp">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Permissions telephonie -->
+    <!-- Nécessaire pour lire l'état des appels entrants -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
 
-    <!-- Permissions contacts (pour creer les favoris = liste blanche DND) -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-
-    <!-- Permission DND - INDISPENSABLE pour le fonctionnement -->
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-
-    <!-- Service persistant -->
+    <!-- Pour la notification au boot si la permission est perdue -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    
-    <!-- Pour AlarmManager exact (redemarrage service) -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="false"
-        android:icon="@android:drawable/ic_dialog_info"
+        android:icon="@android:drawable/ic_menu_call"
         android:label="BK"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BK"
-        android:name=".TaxCalculatorApplication">
+        android:theme="@style/Theme.BK">
 
-        <!-- Activite principale -->
+        <!-- Activité principale -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -43,42 +27,29 @@
             </intent-filter>
         </activity>
 
-        <!-- Service de surveillance DND en arriere-plan -->
+        <!--
+            CallScreeningService : intercepte les appels AVANT qu'ils sonnent.
+            La permission BIND_SCREENING_SERVICE est requise pour que le système
+            puisse lier ce service. Le rôle ROLE_CALL_SCREENING est demandé
+            dans MainActivity via RoleManager.
+        -->
         <service
-            android:name=".services.CalculationService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="phoneCall" />
-
-        <!-- Receiver pour demarrage auto au boot -->
-        <receiver
-            android:name=".services.BootReceiver"
-            android:enabled="true"
+            android:name=".BKScreeningService"
             android:exported="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
+        <!-- Receiver pour rappeler à l'utilisateur si la permission est perdue au reboot -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-
-        <!-- Receiver pour redemarrage du service si tue -->
-        <receiver
-            android:name=".services.ServiceRestartReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="RESTART_SERVICE" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
-
-        <!--
-            NOTE : On ne declare plus l'InCallService ni le CallScreeningService.
-            La solution DND ne necessite pas d'etre l'application d'appel par defaut.
-            Le systeme Android gere tout en mode DND Prioritaire.
-        -->
 
     </application>
 

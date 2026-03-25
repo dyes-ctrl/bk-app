@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BK</string>
-    <string name="toggle_on">ACTIVE</string>
-    <string name="toggle_off">INACTIVE</string>
-    <string name="add_number">Add</string>
-    <string name="remove_number">Remove</string>
-    <string name="show_numbers">Show</string>
-    <string name="hide_numbers">Hide</string>
-    <string name="enter_number">Enter number</string>
-    <string name="invalid_number">Invalid number</string>
-    <string name="permission_required">Permissions required</string>
-    <string name="set_default_app">Set as Default Blocking App</string>
 </resources>

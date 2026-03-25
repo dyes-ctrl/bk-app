@@ -3,180 +3,129 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/black">
+    android:background="#F0F0F0">
 
-    <!-- Interrupteur principal -->
-    <LinearLayout
+    <!-- Status Banner -->
+    <TextView
+        android:id="@+id/statusText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/purple_700"
-        android:gravity="center_vertical">
+        android:padding="18dp"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="BK" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Filtrage des appels"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <Switch
-            android:id="@+id/mainToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true" />
-
-    </LinearLayout>
-
-    <!-- Onglets -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
-
-        <Button
-            android:id="@+id/tabDialer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Dialer"
-            android:layout_marginEnd="4dp" />
-
-        <Button
-            android:id="@+id/tabNumbers"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Numbers"
-            android:layout_marginStart="4dp" />
-
-    </LinearLayout>
-
-    <!-- Contenu Dialer -->
-    <LinearLayout
-        android:id="@+id/dialerLayout"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:visibility="visible">
-
-        <!-- Affichage numero -->
-        <EditText
-            android:id="@+id/dialNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textColor="@color/white"
-            android:textAlignment="center"
-            android:background="@color/purple_500"
-            android:padding="16dp"
-            android:layout_marginBottom="8dp"
-            android:enabled="false"
-            android:cursorVisible="false" />
-
-        <!-- Clavier -->
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="3"
-            android:layout_gravity="center">
-
-            <Button android:id="@+id/btn1" android:text="1" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn2" android:text="2" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn3" android:text="3" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn4" android:text="4" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn5" android:text="5" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn6" android:text="6" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn7" android:text="7" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn8" android:text="8" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn9" android:text="9" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btnStar" android:text="*" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btn0" android:text="0" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-            <Button android:id="@+id/btnHash" android:text="#" android:layout_height="60dp" android:textSize="24sp" android:layout_columnWeight="1" android:layout_margin="4dp"/>
-
-        </GridLayout>
-
-        <!-- Boutons action -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <Button
-                android:id="@+id/btnCall"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:text="CALL"
-                android:backgroundTint="@color/green_enabled"
-                android:layout_marginEnd="4dp" />
-
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:text="DEL"
-                android:layout_marginStart="4dp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- Contenu Liste -->
-    <LinearLayout
-        android:id="@+id/numbersLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <Button
-            android:id="@+id/toggleVisibilityButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Hide Numbers"
-            android:layout_marginBottom="8dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/numbersRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <EditText
-                android:id="@+id/numberInput"
-                android:layout_width="0dp"
+            <!-- Role Permission Button -->
+            <Button
+                android:id="@+id/roleButton"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Enter number"
-                android:inputType="phone"
-                android:textColor="@color/white"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginBottom="16dp"
+                android:text="Accorder la permission de filtrage"
+                android:textAllCaps="false" />
 
-            <Button
-                android:id="@+id/addButton"
+            <!-- Filter On/Off -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:padding="16dp"
+                android:layout_marginBottom="4dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Activer le filtrage"
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/filterSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Block Private Numbers -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bloquer les numéros masqués"
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/privateSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Section title -->
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add" />
+                android:text="NUMÉROS AUTORISÉS"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Add number row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/numberInput"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Ex: 06 12 34 56 78"
+                    android:inputType="phone"
+                    android:background="#FFFFFF"
+                    android:padding="14dp"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/addButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Ajouter"
+                    android:textAllCaps="false" />
+
+            </LinearLayout>
+
+            <!-- Whitelist RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
-
-    </LinearLayout>
-
+    </ScrollView>
 </LinearLayout>
