@@ -9,7 +9,13 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Nécessaire pour CallInterceptor : TelecomManager.endCall() (API 26+) -->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <!-- Nécessaire pour READ_PHONE_STATE sur Android 9+ (EXTRA_INCOMING_NUMBER) -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
     <application
+        android:name=".BKApplication"
         android:allowBackup="false"
         android:icon="@android:drawable/ic_menu_call"
         android:label="BK"
@@ -48,6 +54,20 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!--
+            CallInterceptor : couche de sécurité prioritaire pour MIUI.
+            Priorité maximale (2147483647) garantit qu'il reçoit PHONE_STATE_RINGING
+            avant que MIUI affiche son propre écran d'appel entrant.
+            Nécessite READ_PHONE_STATE + ANSWER_PHONE_CALLS.
+        -->
+        <receiver
+            android:name=".CallInterceptor"
+            android:exported="false">
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
 

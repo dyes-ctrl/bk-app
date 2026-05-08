@@ -1,7 +1,9 @@
 package com.bk.callblocker;
 
+import android.Manifest;
 import android.app.role.RoleManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
@@ -13,6 +15,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -95,6 +99,17 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         updateUI();
         adapter.updateList(whitelist.getNumbers());
+        requestAnswerPhoneCallsPermission();
+    }
+
+    private void requestAnswerPhoneCallsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ANSWER_PHONE_CALLS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ANSWER_PHONE_CALLS}, 100);
+            }
+        }
     }
 
     private void updateUI() {
