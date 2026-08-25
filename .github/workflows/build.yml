@@ -40,10 +40,11 @@ jobs:
 
       - name: Generate signing keystore
         run: |
+          # PKCS12 (keytool default on JDK 17) requires storepass == keypass
           keytool -genkeypair -v \
             -keystore "$RUNNER_TEMP/bk.jks" \
             -alias bk -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass bkstorepass -keypass bkkeypass \
+            -storepass bkstorepass -keypass bkstorepass \
             -dname "CN=BK, OU=BK, O=BK, L=NA, ST=NA, C=FR"
 
       - name: Sign APK
@@ -54,7 +55,7 @@ jobs:
           "$BT/zipalign" -v -p 4 "$UNSIGNED" bk-aligned.apk
           "$BT/apksigner" sign \
             --ks "$RUNNER_TEMP/bk.jks" --ks-key-alias bk \
-            --ks-pass pass:bkstorepass --key-pass pass:bkkeypass \
+            --ks-pass pass:bkstorepass \
             --out bk-release-signed.apk bk-aligned.apk
           "$BT/apksigner" verify --verbose bk-release-signed.apk
 
