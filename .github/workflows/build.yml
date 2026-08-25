@@ -38,11 +38,31 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease --no-daemon
 
+      - name: Generate signing keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore "$RUNNER_TEMP/bk.jks" \
+            -alias bk -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass bkstorepass -keypass bkkeypass \
+            -dname "CN=BK, OU=BK, O=BK, L=NA, ST=NA, C=FR"
+
+      - name: Sign APK
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n1)
+          echo "Using build-tools: $BT"
+          UNSIGNED=app/build/outputs/apk/release/app-release-unsigned.apk
+          "$BT/zipalign" -v -p 4 "$UNSIGNED" bk-aligned.apk
+          "$BT/apksigner" sign \
+            --ks "$RUNNER_TEMP/bk.jks" --ks-key-alias bk \
+            --ks-pass pass:bkstorepass --key-pass pass:bkkeypass \
+            --out bk-release-signed.apk bk-aligned.apk
+          "$BT/apksigner" verify --verbose bk-release-signed.apk
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BK-release-apk
-          path: app/build/outputs/apk/release/*.apk
+          name: BK-release-signed-apk
+          path: bk-release-signed.apk
           retention-days: 30
 
       - name: Create GitHub Release
@@ -50,14 +70,14 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: build-${{ github.run_number }}
-          name: "BK App — Build #${{ github.run_number }}"
+          name: "BK App — Build #${{ github.run_number }} (signé)"
           body: |
-            Build automatique — commit ${{ github.sha }}
+            Build automatique signé — commit ${{ github.sha }}
 
-            Changements v4 :
+            APK signé (installable). Mécanisme applicatif inchangé vs build #19 :
+            - Blocage via CallScreeningService (zéro sonnerie, cross-brand EMUI/MIUI)
+            - CallInterceptor priorité max en filet de secours
             - Cache whitelist en mémoire (zéro I/O sur le chemin d'appel)
-            - CallInterceptor priorité max pour court-circuiter MIUI
-            - Couche double pour garantir 0 sonnerie sur Redmi 9A MIUI 12.5
-          files: app/build/outputs/apk/release/*.apk
+          files: bk-release-signed.apk
           draft: false
           prerelease: false
